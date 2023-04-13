@@ -13,8 +13,8 @@ async function getAddressFromCEP({ cep }: QueryCepData): Promise<CepAdress> {
 
   const result = await request.get(`${process.env.VIA_CEP_API}/${cep}/json/`);
 
-  if (!result.data) {
-    throw notFoundError();
+  if (!result.data || result.data.erro) {
+    throw notFoundError(); // lança um erro para quem chamou essa função!
   }
 
   if (result.data.erro) {
