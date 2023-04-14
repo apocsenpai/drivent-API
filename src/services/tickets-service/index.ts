@@ -2,7 +2,7 @@ import { TicketType, Ticket } from '@prisma/client';
 import ticketRepository from '@/repositories/ticket-repository';
 import { JWTPayload } from '@/protocols';
 import enrollmentRepository from '@/repositories/enrollment-repository';
-import { typeRequestError } from '@/errors/bad-request-error';
+import { badRequestError } from '@/errors/bad-request-error';
 import { notFoundError } from '@/errors';
 
 async function getTicketTypes(): Promise<TicketType[]> {
@@ -24,7 +24,7 @@ async function getTickets({ userId }: JWTPayload): Promise<UserTicket> {
 }
 
 async function createTicket(ticketTypeId: number, userId: number): Promise<UserTicket> {
-  if (!ticketTypeId) throw typeRequestError;
+  if (!ticketTypeId) throw badRequestError();
 
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
 

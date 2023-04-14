@@ -11,7 +11,7 @@ export function handleApplicationErrors(
   if (
     err.name === 'CannotEnrollBeforeStartDateError' ||
     err.name === 'InvalidDataError' ||
-    err.name === 'TypeRequestError'
+    err.name === 'BadRequestError'
   ) {
     return res.status(httpStatus.BAD_REQUEST).send({
       message: err.message,

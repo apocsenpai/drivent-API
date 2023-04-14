@@ -1,8 +1,8 @@
 import { ApplicationError } from '@/protocols';
 
-export function typeRequestError(): ApplicationError {
+export function badRequestError(): ApplicationError {
   return {
-    name: 'TypeRequestError',
-    message: 'Ticket type must be valid',
+    name: 'BadRequestError',
+    message: 'Data input must be valid',
   };
 }
