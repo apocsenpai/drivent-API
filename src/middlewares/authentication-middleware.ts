@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 
 import { unauthorizedError } from '@/errors';
 import { prisma } from '@/config';
+import { JWTPayload } from '@/protocols';
 
 export async function authenticateToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.header('Authorization');
@@ -35,7 +36,3 @@ function generateUnauthorizedResponse(res: Response) {
 }
 
 export type AuthenticatedRequest = Request & JWTPayload;
-
-type JWTPayload = {
-  userId: number;
-};

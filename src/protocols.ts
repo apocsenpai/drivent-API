@@ -22,3 +22,11 @@ export type RequestError = {
   name: string;
   message: string;
 };
+
+export type JWTPayload = {
+  userId: number;
+};
+
+export type TypeIdData = {
+  ticketTypeId: number;
+};
