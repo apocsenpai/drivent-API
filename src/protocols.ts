@@ -30,3 +30,23 @@ export type JWTPayload = {
 export type TypeIdData = {
   ticketTypeId: number;
 };
+
+export type CreatePayment = {
+  ticketId: number;
+  cardData: CardData;
+};
+
+type CardData = {
+  issuer: string;
+  number: number;
+  name: string;
+  expirationDate: Date;
+  cvv: number;
+};
+
+export type PaymentPayload = {
+  ticketId: number;
+  value: number;
+  cardIssuer: string;
+  cardLastDigits: string;
+};

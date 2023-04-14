@@ -17,7 +17,7 @@ async function findAllTickets(enrollmentId: number): Promise<UserTicket> {
   });
 }
 
-type TicketUserId = Ticket & { Enrollment: { userId: number } };
+type TicketUserId = Ticket & { Enrollment: { userId: number } } & { TicketType: { price: number } };
 
 async function findTicketById(ticketId: number): Promise<TicketUserId> {
   return prisma.ticket.findFirst({
@@ -28,6 +28,11 @@ async function findTicketById(ticketId: number): Promise<TicketUserId> {
       Enrollment: {
         select: {
           userId: true,
+        },
+      },
+      TicketType: {
+        select: {
+          price: true,
         },
       },
     },

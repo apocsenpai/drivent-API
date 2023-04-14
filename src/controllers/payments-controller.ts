@@ -1,8 +1,7 @@
 import { NextFunction, Response } from 'express';
 import httpStatus from 'http-status';
 import { AuthenticatedRequest } from '@/middlewares';
-import ticketsService from '@/services/tickets-service';
-import { JWTPayload, TypeIdData } from '@/protocols';
+import { CreatePayment, JWTPayload } from '@/protocols';
 import paymentService from '@/services/payment-service';
 
 export async function getPaymentByTicketId(req: AuthenticatedRequest, res: Response, next: NextFunction) {
@@ -19,15 +18,14 @@ export async function getPaymentByTicketId(req: AuthenticatedRequest, res: Respo
   }
 }
 
-export async function createTicket(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const { ticketTypeId } = req.body as TypeIdData;
+export async function createPayment(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { ticketId, cardData } = req.body as CreatePayment;
 
   const { userId } = req as JWTPayload;
-
   try {
-    const ticket = await ticketsService.createTicket(ticketTypeId, userId);
+    const ticket = await paymentService.createPayment({ ticketId, cardData }, userId);
 
-    res.status(httpStatus.CREATED).send(ticket);
+    res.status(httpStatus.OK).send(ticket);
   } catch (error) {
     next(error);
   }
