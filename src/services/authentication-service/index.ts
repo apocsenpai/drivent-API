@@ -34,7 +34,6 @@ async function createSession(userId: number) {
     token,
     userId,
   });
-
   return token;
 }
 
