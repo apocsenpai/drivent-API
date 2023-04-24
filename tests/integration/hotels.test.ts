@@ -183,6 +183,15 @@ describe('GET /hotels/:hotelId', () => {
   });
 
   describe('when token is valid', () => {
+    it('should respond with status 400 when params hotelId is not valid', async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await server.get(`/hotels/INVALID_PARAMS`).set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toEqual(httpStatus.BAD_REQUEST);
+    });
+
     it('should respond with status 404 when there is no enrollment for given user ', async () => {
       const token = await generateValidToken();
       const response = await server.get('/hotels/1').set('Authorization', `Bearer ${token}`);
@@ -260,10 +269,33 @@ describe('GET /hotels/:hotelId', () => {
       expect(response.status).toEqual(httpStatus.PAYMENT_REQUIRED);
     });
 
-    it('should respond with status 200 and return hotels data', async () => {
+    it('should respond with status 404 when no hotel was found', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await prisma.ticketType.create({
+        data: {
+          name: faker.name.findName(),
+          price: faker.datatype.number(),
+          isRemote: false,
+          includesHotel: true,
+        },
+      });
+
+      await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+
+      const response = await server.get(`/hotels/1`).set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
+    });
+
+    it('should respond with status 200 and return hotels data', async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const enrollment = await createEnrollmentWithAddress(user);
+
       const ticketType = await prisma.ticketType.create({
         data: {
           name: faker.name.findName(),
@@ -282,18 +314,35 @@ describe('GET /hotels/:hotelId', () => {
         },
       });
 
-      const response = await server.get(`/hotels/1`).set('Authorization', `Bearer ${token}`);
+      const rooms = await prisma.room.create({
+        data: {
+          hotelId: hotels.id,
+          name: '396',
+          capacity: 7,
+        },
+      });
+
+      const response = await server.get(`/hotels/${hotels.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toEqual(httpStatus.OK);
-      expect(response.body).toEqual([
-        {
-          id: hotels.id,
-          name: hotels.name,
-          image: hotels.image,
-          createdAt: hotels.createdAt.toISOString(),
-          updatedAt: hotels.updatedAt.toISOString(),
-        },
-      ]);
+
+      expect(response.body).toEqual({
+        id: hotels.id,
+        name: hotels.name,
+        image: hotels.image,
+        createdAt: hotels.createdAt.toISOString(),
+        updatedAt: hotels.updatedAt.toISOString(),
+        Rooms: [
+          {
+            id: rooms.id,
+            name: rooms.name,
+            capacity: rooms.capacity,
+            hotelId: hotels.id,
+            createdAt: rooms.createdAt.toISOString(),
+            updatedAt: rooms.updatedAt.toISOString(),
+          },
+        ],
+      });
     });
   });
 });
