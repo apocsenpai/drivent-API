@@ -1,3 +1,5 @@
+import { Hotel, Room } from '@prisma/client';
+
 export type ApplicationError = {
   name: string;
   message: string;
@@ -50,3 +52,5 @@ export type PaymentPayload = {
   cardIssuer: string;
   cardLastDigits: string;
 };
+
+export type HotelWithRooms = Hotel & { Rooms: Room[] };
