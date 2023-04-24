@@ -12,7 +12,11 @@ async function getHotels(userId: number): Promise<Hotel[]> {
 
   if (ticket.status !== 'PAID' || !includesHotel || isRemote) throw paymentError();
 
-  return await hotelRepository.findAll();
+  const hotels = await hotelRepository.findAll();
+
+  if (!hotels.length) throw notFoundError();
+
+  return hotels;
 }
 
 async function getHotelById(userId: number, hotelId: number): Promise<HotelWithRooms> {
