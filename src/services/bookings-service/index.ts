@@ -27,7 +27,7 @@ async function getBooking(userId: number): Promise<BookingWithRoom> {
 
   if (userTicketIsNotValid) throw forbiddenError();
 
-  const booking = bookingRepository.findBookingByUserId(userId);
+  const booking = await bookingRepository.findBookingByUserId(userId);
 
   if (!booking) throw notFoundError();
 
