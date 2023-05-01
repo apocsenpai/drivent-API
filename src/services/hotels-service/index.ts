@@ -6,11 +6,9 @@ import { notFoundError } from '@/errors';
 import { HotelWithRooms } from '@/protocols';
 
 async function getHotels(userId: number): Promise<Hotel[]> {
-  const ticket = await ticketService.getTickets({ userId });
+  const userTicketIsNotValid = await validateUserTicket(userId);
 
-  const { isRemote, includesHotel } = ticket.TicketType;
-
-  if (ticket.status !== 'PAID' || !includesHotel || isRemote) throw paymentError();
+  if (userTicketIsNotValid) throw paymentError();
 
   const hotels = await hotelRepository.findAll();
 
@@ -20,17 +18,25 @@ async function getHotels(userId: number): Promise<Hotel[]> {
 }
 
 async function getHotelById(userId: number, hotelId: number): Promise<HotelWithRooms> {
-  const ticket = await ticketService.getTickets({ userId });
+  const userTicketIsNotValid = await validateUserTicket(userId);
 
-  const { isRemote, includesHotel } = ticket.TicketType;
-
-  if (ticket.status !== 'PAID' || !includesHotel || isRemote) throw paymentError();
+  if (userTicketIsNotValid) throw paymentError();
 
   const hotel = await hotelRepository.findHotelById(hotelId);
 
   if (!hotel) throw notFoundError();
 
   return hotel;
+}
+
+export async function validateUserTicket(userId: number) {
+  const ticket = await ticketService.getTickets({ userId });
+
+  const { isRemote, includesHotel } = ticket.TicketType;
+
+  if (ticket.status !== 'PAID' || !includesHotel || isRemote) return true;
+
+  return false;
 }
 
 const hotelService = {
