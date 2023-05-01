@@ -5,6 +5,6 @@ import { roomIdSchema } from '@/schemas/rooms-schema';
 
 const bookingRouter = Router();
 
-bookingRouter.use('/*', authenticateToken).post('/', validateBody(roomIdSchema), createBooking);
+bookingRouter.use('/*', authenticateToken).get('/').post('/', validateBody(roomIdSchema), createBooking);
 
 export { bookingRouter };
