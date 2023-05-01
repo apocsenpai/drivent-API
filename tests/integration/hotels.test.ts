@@ -14,7 +14,6 @@ import {
   createRoomWithHotelId,
 } from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
-import { prisma } from '@/config';
 import app, { init } from '@/app';
 
 beforeAll(async () => {
