@@ -21,6 +21,22 @@ export async function createBooking(req: AuthenticatedRequest, res: Response, ne
   }
 }
 
+export async function updateBooking(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { roomId } = req.body as RoomIdData;
+
+  const { userId } = req as JWTPayload;
+
+  const bookingId = +req.params.bookingId;
+
+  try {
+    const id = await bookingService.updateBooking(roomId, userId, bookingId);
+
+    res.send({ id });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function getBooking(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const { userId } = req as JWTPayload;
 
