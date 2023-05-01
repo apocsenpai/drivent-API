@@ -3,7 +3,16 @@ import { TicketStatus } from '@prisma/client';
 import httpStatus from 'http-status';
 import * as jwt from 'jsonwebtoken';
 import supertest from 'supertest';
-import { createEnrollmentWithAddress, createUser, createTicket } from '../factories';
+import {
+  createEnrollmentWithAddress,
+  createUser,
+  createTicket,
+  createTicketTypeRemote,
+  createTicketTypeWithoutHotel,
+  createTicketTypeWithHotel,
+  createHotel,
+  createRoomWithHotelId,
+} from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
 import { prisma } from '@/config';
 import app, { init } from '@/app';
@@ -64,14 +73,7 @@ describe('GET /hotels', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: true,
-          includesHotel: faker.datatype.boolean(),
-        },
-      });
+      const ticketType = await createTicketTypeRemote();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
@@ -84,14 +86,7 @@ describe('GET /hotels', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: faker.datatype.boolean(),
-          includesHotel: false,
-        },
-      });
+      const ticketType = await createTicketTypeWithoutHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
@@ -104,14 +99,7 @@ describe('GET /hotels', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: false,
-          includesHotel: true,
-        },
-      });
+      const ticketType = await createTicketTypeWithHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
 
@@ -124,14 +112,7 @@ describe('GET /hotels', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: false,
-          includesHotel: true,
-        },
-      });
+      const ticketType = await createTicketTypeWithHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
@@ -144,23 +125,11 @@ describe('GET /hotels', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: false,
-          includesHotel: true,
-        },
-      });
+      const ticketType = await createTicketTypeWithHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
-      const hotels = await prisma.hotel.create({
-        data: {
-          name: faker.datatype.string(),
-          image: faker.image.abstract(),
-        },
-      });
+      const hotels = await createHotel();
 
       const response = await server.get(`/hotels`).set('Authorization', `Bearer ${token}`);
 
@@ -233,14 +202,7 @@ describe('GET /hotels/:hotelId', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: true,
-          includesHotel: faker.datatype.boolean(),
-        },
-      });
+      const ticketType = await createTicketTypeRemote();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
@@ -253,14 +215,7 @@ describe('GET /hotels/:hotelId', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: faker.datatype.boolean(),
-          includesHotel: false,
-        },
-      });
+      const ticketType = await createTicketTypeWithoutHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
@@ -273,14 +228,7 @@ describe('GET /hotels/:hotelId', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: false,
-          includesHotel: true,
-        },
-      });
+      const ticketType = await createTicketTypeWithHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
 
@@ -293,14 +241,7 @@ describe('GET /hotels/:hotelId', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: false,
-          includesHotel: true,
-        },
-      });
+      const ticketType = await createTicketTypeWithHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
@@ -316,31 +257,13 @@ describe('GET /hotels/:hotelId', () => {
 
       const enrollment = await createEnrollmentWithAddress(user);
 
-      const ticketType = await prisma.ticketType.create({
-        data: {
-          name: faker.name.findName(),
-          price: faker.datatype.number(),
-          isRemote: false,
-          includesHotel: true,
-        },
-      });
+      const ticketType = await createTicketTypeWithHotel();
 
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
-      const hotels = await prisma.hotel.create({
-        data: {
-          name: faker.datatype.string(),
-          image: faker.image.abstract(),
-        },
-      });
+      const hotels = await createHotel();
 
-      const rooms = await prisma.room.create({
-        data: {
-          hotelId: hotels.id,
-          name: '396',
-          capacity: 7,
-        },
-      });
+      const rooms = await createRoomWithHotelId(hotels.id);
 
       const response = await server.get(`/hotels/${hotels.id}`).set('Authorization', `Bearer ${token}`);
 
