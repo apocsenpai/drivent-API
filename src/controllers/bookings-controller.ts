@@ -26,12 +26,12 @@ export async function updateBooking(req: AuthenticatedRequest, res: Response, ne
 
   const { userId } = req as JWTPayload;
 
-  const bookingId = +req.params.bookingId;
+  const bookingParamsId = +req.params.bookingId;
 
   try {
-    const id = await bookingService.updateBooking(roomId, userId, bookingId);
+    const bookingId = await bookingService.updateBooking(roomId, userId, bookingParamsId);
 
-    res.send({ id });
+    res.send({ bookingId });
   } catch (error) {
     next(error);
   }
