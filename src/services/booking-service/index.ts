@@ -33,7 +33,9 @@ async function updateBooking(roomId: number, userId: number, bookingId: number) 
 
   const { Booking } = room;
 
-  if (Booking.length) throw forbiddenError();
+  const userDoesNotHaveBooking = !(await bookingRepository.findBookingByUserId(userId));
+
+  if (Booking.length || userDoesNotHaveBooking) throw forbiddenError();
 
   const { id } = await bookingRepository.upsertBooking(room.id, userId, bookingId);
 
