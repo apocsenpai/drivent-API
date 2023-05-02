@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '@/middlewares';
 import { JWTPayload } from '@/protocols';
-import bookingService from '@/services/bookings-service';
+import bookingService from '@/services/booking-service';
 
 type RoomIdData = {
   roomId: number;
