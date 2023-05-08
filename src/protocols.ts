@@ -40,7 +40,7 @@ export type CreatePayment = {
 
 type CardData = {
   issuer: string;
-  number: number;
+  number: string;
   name: string;
   expirationDate: string;
   cvv: string;

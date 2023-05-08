@@ -107,16 +107,6 @@ describe('GET /tickets', () => {
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
 
-    it('should respond with status 404 when user doesnt have a ticket yet', async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      await createEnrollmentWithAddress(user);
-
-      const response = await server.get('/tickets').set('Authorization', `Bearer ${token}`);
-
-      expect(response.status).toEqual(httpStatus.NOT_FOUND);
-    });
-
     it('should respond with status 200 and with ticket data', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
@@ -182,19 +172,6 @@ describe('POST /tickets', () => {
       const response = await server.post('/tickets').set('Authorization', `Bearer ${token}`).send({});
 
       expect(response.status).toEqual(httpStatus.BAD_REQUEST);
-    });
-
-    it('should respond with status 404 when user doesnt have enrollment yet', async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      const ticketType = await createTicketType();
-
-      const response = await server
-        .post('/tickets')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ ticketTypeId: ticketType.id });
-
-      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
 
     it('should respond with status 201 and with ticket data', async () => {

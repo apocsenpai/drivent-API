@@ -33,10 +33,8 @@ async function findById(enrollmentId: number) {
 export type CreateEnrollmentParams = Omit<Enrollment, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateEnrollmentParams = Omit<CreateEnrollmentParams, 'userId'>;
 
-const enrollmentRepository = {
+export default {
   findWithAddressByUserId,
   upsert,
   findById,
 };
-
-export default enrollmentRepository;
