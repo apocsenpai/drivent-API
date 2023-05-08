@@ -42,8 +42,8 @@ type CardData = {
   issuer: string;
   number: number;
   name: string;
-  expirationDate: Date;
-  cvv: number;
+  expirationDate: string;
+  cvv: string;
 };
 
 export type PaymentPayload = {
