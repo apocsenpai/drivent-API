@@ -2,7 +2,7 @@ import { NextFunction, Response } from 'express';
 import httpStatus from 'http-status';
 import { AuthenticatedRequest } from '@/middlewares';
 import { CreatePayment, JWTPayload } from '@/protocols';
-import paymentService from '@/services/payment-service';
+import paymentService from '@/services/payments-service';
 
 export async function getPaymentByTicketId(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const ticketId = +req.query.ticketId;
